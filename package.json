@@ -1,0 +1,26 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "Click on `Use this template` to copy the Mintlify starter kit. The starter kit contains examples including",
+  "main": "convertSwagger.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "convert": "node convertSwagger.js",
+    "convert:swagger": "node convertSwagger.js swagger.json openapi.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abhijeet-orbitx/docs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abhijeet-orbitx/docs/issues"
+  },
+  "homepage": "https://github.com/abhijeet-orbitx/docs#readme",
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1"
+  }
+}
