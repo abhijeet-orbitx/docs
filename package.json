@@ -5,8 +5,8 @@
   "main": "convertSwagger.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "convert": "node convertSwagger.js",
-    "convert:swagger": "node convertSwagger.js swagger.json openapi.json"
+    "convert": "node createOpenAPI/convertSwagger.js",
+    "convert:swagger": "node createOpenAPI/convertSwagger.js swagger.json openapi.json"
   },
   "repository": {
     "type": "git",
