@@ -1,71 +1,148 @@
 ---
-title: Introduction
-description: "Welcome to the home of your new documentation"
+title: OrbitX - Consumer API Integration Guide
+description: "Complete guide for integrating with OrbitX Consumer API"
 ---
 
-<img
-  className="block dark:hidden"
-  src="/images/hero-light.png"
-  alt="Hero Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.png"
-  alt="Hero Dark"
-/>
+# OrbitX - Consumer API Integration Guide
 
-## Setting up
+## Signup
 
-The first step to world-class documentation is setting up your editing environments.
+When a customer signs up for an OrbitX card, you'll need to call signup api endpoint.
+This requires some mandatory information like a verified phone number & email address of the user. Users in the OrbitX system are uniquely identified by the phone number & email address. The signup process creates a new user in the OrbitX system if the information does not exist in the system but also validates the information of an existing / returning user in the same way without creating a new record. In both the cases the system returns a valid & permanent authentication token, which needs to be saved at your end for future use.
 
-<CardGroup cols={2}>
-  <Card
-    title="Edit Your Docs"
-    icon="pen-to-square"
-    href="https://mintlify.com/docs/quickstart"
-  >
-    Get your docs set up locally for easy development
-  </Card>
-  <Card
-    title="Preview Changes"
-    icon="image"
-    href="https://mintlify.com/docs/development"
-  >
-    Preview your changes before you push to make sure they're perfect
-  </Card>
-</CardGroup>
+## Signin
 
-## Make it yours
+The signin process allows the user to create a valid session by providing an authentication token received in the signup process. For signin into the OrbitX system, you'll need to call signin api endpoint. On successful signin, the OrbitX system returns a valid accessToken & refreshToken for the session management. The accessToken is an expiry token & valid for a certain duration. To keep the session alive you need to call refresh token api on certain time intervals by providing a refreshToken.
 
-Update your docs to your brand and add valuable content for the best user conversion.
+## Two-factor authentication
 
-<CardGroup cols={2}>
-  <Card
-    title="Customize Style"
-    icon="palette"
-    href="https://mintlify.com/docs/settings/global"
-  >
-    Customize your docs to your company's colors and brands
-  </Card>
-  <Card
-    title="Reference APIs"
-    icon="code"
-    href="https://mintlify.com/docs/api-playground/openapi"
-  >
-    Automatically generate endpoints from an OpenAPI spec
-  </Card>
-  <Card
-    title="Add Components"
-    icon="screwdriver-wrench"
-    href="https://mintlify.com/docs/content/components/accordions"
-  >
-    Build interactive features and designs to guide your users
-  </Card>
-  <Card
-    title="Get Inspiration"
-    icon="stars"
-    href="https://mintlify.com/customers"
-  >
-    Check out our showcase of our favorite documentation
-  </Card>
-</CardGroup>
+After a successful signin, a user can activate two-factor authentication in the OrbitX system. This additional security layer will be used for all the critical actions taken by the user in the application like Card update, withdrawal etc. It is advisable to enforce the user for the two-factor authentication activation.
+
+## KYC 
+
+OrbitX KYC endpoint required below information :
+
+- **firstName** (string) : Users first name
+- **lastName** (string) : Users last name
+- **Email** (string) : Users email
+- **birthDate** (string) : Users birth date
+- **address** (object) : Users address
+- **phoneCountryCode** (string) : Phone country dialing code
+- **phoneNumber** (string) : Users Phone number
+- **walletAddress** (string) :  This user's EVM address is required for wallet management. This wallet address will be assigned as ADMIN of the collateral contract and will be used at the time of withdrawal.
+- **ipAddress** (string) : This user's IP address
+- **occupation** (string) : The user's occupation
+- **annualSalary** (string) : The user's annual salary in USD
+- **accountPurpose** (string) : The purpose of the user's account like Personal or Business use
+- **expectedMonthlyVolume** (string) : The amount of money (USD) the user expects to spend each month
+- **isTermsOfServiceAccepted** (boolean) : Whether the user has accepted the terms of service
+
+Once you successfully post the KYC information, you will receive a verification web link in the response as a next step to perform the sumsub verification like face recognition, document verification etc. This web link can be opened in a webview under the app. 
+The format of the web verification link is as follows:
+
+```json
+"nextSteps": [
+    {
+      "verificationLink": {
+        "url": "https://app-kyc.xyz/kyc",
+        "params": {
+          "userId": "d195870c-4613-4fc2-ac2d-49d20ce145b3",
+          "redirect": "https://yourpage.com/"
+        }
+      }
+    }
+  ]
+```
+
+- **url**  (mandatory) : Base url for sumsub verification
+- **userId** (mandatory): This parameter needs to be added in the querystring 
+- **redirect** (optional) : This parameter can be added optionally if you want to redirect after the successful KYC.
+
+## KYC (with sumsub shared token)
+
+If you already use Sumsub for compliance, we can simplify some of our KYC flows by using their token sharing system. Use the Sumsub endpoint to generate a share token using OrbitX client ID. When doing a KYC, use the token you generated as the sumsubShareToken. The OrbiX system will be pulling the compliance information from the sumsubShareToken and using it for the internal KYC process. Apart from the sumsubShareToken you'll still need to provide some additional information required for the wallet management & internal compliance (AML) as below:
+
+- **walletAddress** (string) :  This user's EVM address is required for wallet management. This wallet address will be assigned as ADMIN of the collateral contract and will be used at the time of withdrawal.
+- **ipAddress** (string) : This user's IP address
+- **occupation** (string) : The user's occupation. List can be obtained from the master API
+- **annualSalary** (string) : The user's annual salary in USD
+- **accountPurpose** (string) : The purpose of the user's account like Personal or Business use
+- **expectedMonthlyVolume** (string) : The amount of money (USD) the user expects to spend each month
+- **isTermsOfServiceAccepted** (boolean) : Whether the user has accepted the terms of service
+
+## KYC Status
+
+KYC status can be tracked using the verification status endpoint. Below are the different verification statuses:
+
+- **pending** : This is the most common state for an application when the user's KYC information is not yet submitted.
+- **saved** : Application KYC information has been submitted and stored in the OrbitX system but the verification process has not yet started.
+- **underReview** : The application data is submitted for the verification process but not yet approved or rejected.
+- **verified** : The application has been approved, either automatically or through additional verification. No further action is needed on your end.
+- **denied** : This is generally a terminal state. The application has been denied, and cannot be appealed or resubmitted. No further action is possible on your end. However, at our discretion, we may change this status.
+
+## User Profile
+
+Users' information can be retrieved through the profile api endpoint. This includes all the information retrieved from the sumsub and the information submitted by the user at the time of KYC process. Along with the information, it returns users KYC status too. The system also allocates a referral code to this user to join our referral program.
+
+## Wallet Management
+
+Wallet api gives you control to check users deposit information, balances & withdraw their funds from the collateral account. At present the OrbitX system supports EVM networks like Polygon for deposit and withdrawal. On successful completion of the KYC, each user will be given a unique deposit contract address on the Polygon network where they can deposit their collaterals in the form of USDC & USDC.
+
+Users deposit contract information can be retrieved through deposit api endpoint. It gives you the deposit contract address, chain id, and supported token.
+
+Users' latest wallet balance can be checked through the balance api endpoint.  This will allow you to view your credit limit, as well as any pending, posted, or due charges. These values are given in CENT (not in dollar) so please convert them into your system accordingly.
+
+Withdrawal of funds is a two step process:
+
+1. You need to get a valid withdrawal signature by providing basic withdrawal information like chain id, token address, amount & recipient address. In the response you'll be getting a withdrawal signature along with a valid controller contract address.
+2. Once you have the signature, the admin wallet must execute a transaction on the smart contract controller. This is a separate address you can find in the company's deposit api. How you do this is up to you, but you'll need to call the withdrawAsset function on the controller contract with the signature parameters.
+
+> **Note:** 
+> - Only an admin wallet on the smart contract can withdraw collateral. However, they can withdraw it to any address.
+> - The withdrawal signature is valid for 5 minutes. During this period the withdrawal amount  will be locked in the collateral account. 
+
+## Card Management
+
+Once a user's application is approved, you can create cards for them.
+Virtual cards that are available for use instantly with a default limit of $500 per day.
+This limit can be changed later. The default status of the card is active & can be updated later as inactive, locked & cancelled. Below is a list of card functions:
+
+- Add a new card
+- Update a card
+- List all the cards
+- View card secure information
+
+### Viewing encrypted card details
+
+Generally, we don't encourage viewing or storing sensitive user card information. While we expose the last 4 digits of the card, as well as its expiry date, there are certain compliance requirements involved with viewing the full card number and CVC.
+
+You can allow your users to get encrypted card details, but it requires a special process to ensure only the user can view this data. As part of this process, you'll need to pass in an encrypted SessionId header when calling this endpoint.
+
+## Transactions
+
+You can get a list of all the transactions made by the user by calling the transaction api endpoint. We include cursor-based pagination as part of the endpoint. There are a few types of transactions that the endpoint returns, but all include a type field and a separate schema in the endpoint. You can also get the details of any specific transaction by querying it through its transaction id. 
+
+**Transaction Types are:**
+
+- **spend** : A transaction made on the card. 
+- **deposit** : Funds deposited into the collateral account.
+
+**Transaction status:**
+
+- **declined** : A transaction presented but declined by the merchant or VISA
+- **pending** : A transaction is made successfully but not yet settled
+- **completed** : A transaction is successfully settled
+- **reversed** : A transaction was made but reversed by the system
+
+## Master Data Management
+
+The master data api provides information about the different enum constants used across the application as:
+
+- **Country** : A  list of all the supported countries with their dialing codes, alpha 2 & alpha 3 codes.
+- **DepositToken** : A list of all the allowed tokens for deposit.
+- **CardStatus** : A list of all the different card statuses.
+- **CardProduct** : A list of all the card product types like Platinum or Signature.
+
+## FAQ
+
+*[FAQ content to be added]*
