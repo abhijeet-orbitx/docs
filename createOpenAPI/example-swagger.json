@@ -1,0 +1,202 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Example API",
+    "version": "1.0.0",
+    "description": "A simple example API to demonstrate conversion"
+  },
+  "host": "api.example.com",
+  "basePath": "/v1",
+  "schemes": ["https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get all users",
+        "description": "Retrieve a list of all users",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of users to return",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/UserList"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new user",
+        "description": "Create a new user with the provided information",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "User object to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "description": "Retrieve a specific user by their ID",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "required": ["id", "name", "email"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier for the user"
+        },
+        "name": {
+          "type": "string",
+          "description": "User's full name"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User's email address"
+        },
+        "age": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "User's age"
+        },
+        "active": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the user account is active"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the user was created"
+        }
+      }
+    },
+    "UserList": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "description": "Total number of users"
+        },
+        "page": {
+          "type": "integer",
+          "description": "Current page number"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Number of users per page"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "required": ["message"],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "code": {
+          "type": "string",
+          "description": "Error code"
+        },
+        "details": {
+          "type": "object",
+          "description": "Additional error details"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Bearer token for authentication"
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "User management operations"
+    }
+  ]
+} 
