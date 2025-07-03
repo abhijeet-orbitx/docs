@@ -28,14 +28,14 @@
             "group": "API Consumer",
             "openapi": {
               "source": "api-reference/consumer.json",
-              "directory": "api-reference"
+              "directory": "api-consumer-reference"
             }
           },
           {
             "group": "API Corporate",
             "openapi": {
               "source": "api-reference/corporate.json",
-              "directory": "api-reference"
+              "directory": "api-corporate-reference"
             }
           }
         ]
