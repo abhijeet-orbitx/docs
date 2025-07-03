@@ -25,9 +25,16 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "API",
+            "group": "API Consumer",
             "openapi": {
-              "source": "openapi.json",
+              "source": "api-reference/consumer.json",
+              "directory": "api-reference"
+            }
+          },
+          {
+            "group": "API Corporate",
+            "openapi": {
+              "source": "api-reference/corporate.json",
               "directory": "api-reference"
             }
           }
