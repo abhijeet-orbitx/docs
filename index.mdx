@@ -3,7 +3,31 @@ title: OrbitX - Consumer API Integration Guide
 description: "Complete guide for integrating with OrbitX Consumer API"
 ---
 
-# OrbitX - Consumer API Integration Guide
+
+## Authentication
+
+All API requests to OrbitX require proper authentication using HMAC signatures. You need to generate a signature for each request body using the provided secret key.
+
+### Generating HMAC Signatures
+
+To authenticate your API requests, you need to generate an HMAC-SHA256 signature of the request body. Here's how to do it:
+
+```javascript
+const CryptoJS = require('crypto-js');
+const SECRET = 'ae324a8da36fbb0957f12bf6a75f2c1ff4a54af';
+const requestBody = JSON.stringify(JSON.parse(pm.request.body.raw));
+const hmac = CryptoJS.HmacSHA256(requestBody, SECRET);
+const computedHash = hmac.toString(CryptoJS.enc.Hex);
+pm.environment.set("signature", computedHash);
+```
+
+**Steps:**
+1. Use the provided secret key: `ae324a8da36fbb0957f12bf6a75f2c1ff4a54af`
+2. Generate an HMAC-SHA256 hash of your JSON request body
+3. Include the computed signature in your request headers
+
+**Note:** Make sure to include the signature in the appropriate header field as specified in the API reference documentation.
+
 
 ## Signup
 
